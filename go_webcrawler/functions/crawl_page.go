@@ -9,12 +9,12 @@ import (
 
 func (cfg *config) crawlPage(currentURL string){
 	
-	cfg.concurrencyControl <- struct{}{}
+	cfg.concurrencyControl <- struct{}{}//start one goroutine
 	defer func(){
-		<- cfg.concurrencyControl
-		cfg.wg.Done()
+		<- cfg.concurrencyControl //end goroutine
+		cfg.wg.Done() //mark eork as complete
 	}()
-	if cfg.lenPages() >= cfg.maxSetting{
+	if cfg.lenPages() >= cfg.maxSetting{ //check if crawling limit has been reached
 		return 
 	}
 	normal_current, err := url.Parse(currentURL)
@@ -23,7 +23,7 @@ func (cfg *config) crawlPage(currentURL string){
 		return
 	}
 
-	if cfg.baseURL.Hostname() != normal_current.Hostname(){
+	if cfg.baseURL.Hostname() != normal_current.Hostname(){ //check correct domain
 		return
 	}
 
@@ -33,16 +33,16 @@ func (cfg *config) crawlPage(currentURL string){
 		return 
 	}
 
-	/*if _, exists := cfg.pages[normalize_current]; exists{
+	/*if _, exists := cfg.pages[normalize_current]; exists{    debug message
 		cfg.pages[normalize_current] += 1
 		fmt.Printf("Already crawled: %s\n", normalize_current)
 		return
 	}else{
 		cfg.pages[normalize_current] = 1
-		fmt.Printf("Crawling: %s\n", normalize_current)
+		fmt.Printf("Crawling: %s\n", normalize_current)   
 	}*/
 	
-	isFirst := cfg.addPageVisit(normalize_current)
+	isFirst := cfg.addPageVisit(normalize_current) //prevent duplicated crawling
 	if !isFirst{
 		return
 	}
@@ -56,13 +56,13 @@ func (cfg *config) crawlPage(currentURL string){
 	}
 
 	//fmt.Print(htmlBody)
-	urls, err := getURLsFromHTML(htmlBody, cfg.baseURL)
+	urls, err := getURLsFromHTML(htmlBody, cfg.baseURL) //recursively crawl extracted url
 	if err != nil{
 		fmt.Printf("error getting url from html")
 		return 
 	}
 	for _, u := range urls{
-		cfg.wg.Add(1)
-		go cfg.crawlPage(u)
+		cfg.wg.Add(1) //add a new go routine to wait group
+		go cfg.crawlPage(u) //recursively crawl links 
 	}
 }

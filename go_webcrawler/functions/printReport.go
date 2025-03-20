@@ -24,7 +24,7 @@ func printReport(pages map[string]int, baseURL string){
 
 	sort.Slice(ordered, func(i, j int) bool {
 		if ordered[i].count == ordered[j].count{
-			return ordered[i].url < ordered[j].url
+			return ordered[i].url < ordered[j].url //alphabetical order if numeric is the same
 		}
 		return ordered[i].count > ordered[j].count
 	})

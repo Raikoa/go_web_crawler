@@ -18,12 +18,12 @@ func GetHTML(rawURL string) (string, error) {
 		return "", fmt.Errorf("got HTTP error: %s", res.Status)
 	}
 
-	contentType := res.Header.Get("Content-Type")
+	contentType := res.Header.Get("Content-Type") //check response is html
 	if !strings.Contains(contentType, "text/html") {
 		return "", fmt.Errorf("got non-HTML response: %s", contentType)
 	}
 
-	htmlBodyBytes, err := io.ReadAll(res.Body)
+	htmlBodyBytes, err := io.ReadAll(res.Body) //raw binary data
 	if err != nil {
 		return "", fmt.Errorf("couldn't read response body: %v", err)
 	}

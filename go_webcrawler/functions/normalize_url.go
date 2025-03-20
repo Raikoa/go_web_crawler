@@ -6,7 +6,7 @@ import "fmt"
 
 
 
-func normalizeURL(Url string) (string, error){
+func normalizeURL(Url string) (string, error){ //strip protocal 
 	URL, err := url.Parse(Url)
 	if err != nil{
 		return "", err
@@ -17,17 +17,17 @@ func normalizeURL(Url string) (string, error){
 }
 
 
-func getURLsFromHTML(htmlBody string, BaseURL *url.URL) ([]string, error) {
+func getURLsFromHTML(htmlBody string, BaseURL *url.URL) ([]string, error) { //extracts <a href> from html
 	
 	htmlReader := strings.NewReader(htmlBody)
-	doc, err := html.Parse(htmlReader)
+	doc, err := html.Parse(htmlReader) //into a *html.node tree
 	if err != nil {
 		return nil, fmt.Errorf("couldn't parse HTML: %v", err)
 	}
 
 	var urls []string
 	var traverseNodes func(*html.Node)
-	traverseNodes = func(node *html.Node) {
+	traverseNodes = func(node *html.Node) { //traverseNodes function, recursive
 		if node.Type == html.ElementNode && node.Data == "a" {
 			for _, anchor := range node.Attr {
 				if anchor.Key == "href" {
@@ -37,7 +37,7 @@ func getURLsFromHTML(htmlBody string, BaseURL *url.URL) ([]string, error) {
 						continue
 					}
 
-					resolvedURL := BaseURL.ResolveReference(href)
+					resolvedURL := BaseURL.ResolveReference(href)//converts relative url to absolute url
 					urls = append(urls, resolvedURL.String())
 				}
 			}
