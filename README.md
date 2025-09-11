@@ -5,3 +5,6 @@ call the program by going into functions and run main.go with three arguments <B
 BaseUrl: the page you want to crawl
 MaxConcurrency: max goroutine to run
 MaxPages: max number of pages to crawl
+
+
+Project practice from boot.dev
